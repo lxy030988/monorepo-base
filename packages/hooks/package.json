@@ -1,6 +1,6 @@
 {
   "name": "@monorepo-base/hooks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React hooks collection",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

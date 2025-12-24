@@ -1,5 +1,11 @@
 # @monorepo-base/hooks
 
+## 0.1.2
+
+### Patch Changes
+
+- 依赖更新
+
 ## 0.1.1
 
 ### Patch Changes
