@@ -1,34 +1,44 @@
 # Monorepo Base
 
-基于 pnpm + tsup + changesets 的 Monorepo 项目模板。
+一个基于 pnpm workspace 的现代化 Monorepo 项目模板,集成了 Tailwind CSS v4、Storybook、Changesets 版本管理和 Verdaccio 本地 npm registry。
 
-## 📦 项目结构
+## 📦 项目架构
 
 ```
 monorepo-base/
-├── packages/
-│   ├── hooks/          # React Hooks 库
+├── apps/                      # 应用目录
+│   └── play-ui/              # Storybook 预览应用
+│       ├── .storybook/       # Storybook 配置
+│       ├── src/              # 应用源码
+│       ├── postcss.config.js # PostCSS 配置
+│       ├── tailwind.config.js # Tailwind 配置
+│       └── vite.config.ts    # Vite 配置
+├── packages/                  # 包目录
+│   ├── components/           # React 组件库
+│   │   ├── src/             # 组件源码
+│   │   ├── tailwind.config.js # 组件主题配置
+│   │   └── package.json
+│   ├── hooks/               # React Hooks 集合
 │   │   ├── src/
-│   │   │   ├── useToggle.ts        # 布尔状态切换 hook
-│   │   │   ├── useLocalStorage.ts  # localStorage 同步 hook
-│   │   │   └── index.ts
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── tsup.config.ts
-│   └── utils/          # 工具函数库
+│   │   └── package.json
+│   └── utils/               # 工具函数集合
 │       ├── src/
-│       │   ├── format.ts    # 格式化工具(日期、数字)
-│       │   ├── validate.ts  # 验证工具(邮箱、手机号等)
-│       │   └── index.ts
-│       ├── package.json
-│       ├── tsconfig.json
-│       └── tsup.config.ts
-├── .changeset/         # Changesets 配置
-├── pnpm-workspace.yaml # pnpm 工作区配置
-├── tsconfig.json       # TypeScript 根配置
-├── .npmrc              # npm 配置
-└── package.json        # 根 package.json
+│       └── package.json
+├── .changeset/              # Changesets 配置
+├── tsconfig.json            # 根 TypeScript 配置
+├── pnpm-workspace.yaml      # pnpm workspace 配置
+└── package.json             # 根 package.json
 ```
+
+## 🎨 技术栈
+
+- **包管理器**: pnpm v10.23.0
+- **构建工具**: tsup (基于 esbuild)
+- **开发工具**: Vite, Storybook
+- **样式方案**: Tailwind CSS v4
+- **版本管理**: Changesets
+- **本地 Registry**: Verdaccio
+- **语言**: TypeScript
 
 ## 🚀 快速开始
 
@@ -38,498 +48,388 @@ monorepo-base/
 pnpm install
 ```
 
+### 开发模式
+
+#### 启动 Storybook (组件预览)
+
+```bash
+cd apps/play-ui
+pnpm run storybook
+```
+
+访问 http://localhost:6006
+
+#### 启动 Vite 开发服务器
+
+```bash
+cd apps/play-ui
+pnpm run dev
+```
+
+访问 http://localhost:5173
+
 ### 构建所有包
 
 ```bash
 pnpm build
 ```
 
-### 开发模式(监听文件变化)
-
-```bash
-pnpm dev
-```
-
-### 清理构建产物
-
-```bash
-pnpm clean
-```
-
 ## 📚 包说明
+
+### @monorepo-base/components
+
+React 组件库,使用 Tailwind CSS v4 进行样式化。
+
+**特性**:
+
+- ✅ 5 种 Button 变体 (primary, secondary, outline, ghost, danger)
+- ✅ 3 种尺寸 (sm, md, lg)
+- ✅ Header 和 Page 组件
+- ✅ 自定义主题色 (primary: #555ab9)
+- ✅ 完整的 TypeScript 类型定义
+
+**使用示例**:
+
+```tsx
+import { Button } from '@monorepo-base/components'
+
+;<Button variant="primary" size="md" label="点击我" />
+```
 
 ### @monorepo-base/hooks
 
-React Hooks 工具库,包含常用的自定义 hooks。
+React Hooks 集合。
 
-**包含的 Hooks:**
+**包含**:
 
-- `useToggle` - 布尔状态切换管理
-- `useLocalStorage` - localStorage 状态同步(支持 SSR、跨标签页同步)
-
-**使用示例:**
-
-```tsx
-import { useToggle, useLocalStorage } from '@monorepo-base/hooks'
-
-function App() {
-  const [isOpen, toggle] = useToggle(false)
-  const [user, setUser] = useLocalStorage('user', { name: 'Guest' })
-
-  return (
-    <div>
-      <button onClick={toggle}>切换: {isOpen ? '开' : '关'}</button>
-      <p>用户: {user.name}</p>
-    </div>
-  )
-}
-```
+- `useToggle` - 布尔值切换
+- `useLocalStorage` - localStorage 持久化
+- `useFormattedDate` - 日期格式化
 
 ### @monorepo-base/utils
 
-通用工具函数库,提供格式化和验证等常用功能。
+通用工具函数集合。
 
-**包含的工具函数:**
+**包含**:
 
-**格式化:**
+- `formatDate` - 日期格式化
+- `formatNumber` - 数字格式化
+- `validation` - 验证工具
 
-- `formatDate(date, format)` - 日期格式化
-- `formatNumber(num, options)` - 数字格式化(千分位、货币等)
+## 🎨 Tailwind CSS 集成
 
-**验证:**
+### 架构设计
 
-- `isEmail(email)` - 邮箱验证
-- `isPhone(phone)` - 手机号验证
-- `isUrl(url)` - URL 验证
-- `isIdCard(idCard)` - 身份证号验证
+采用 Tailwind CSS v4 推荐的 Monorepo 策略:
 
-**使用示例:**
+1. **Components 包**:
 
-```ts
-import { formatDate, formatNumber, isEmail } from '@monorepo-base/utils'
+   - 不编译 CSS,只提供带 Tailwind 类的组件
+   - 定义自定义主题 (`tailwind.config.js`)
+   - 将 Tailwind 作为 peer dependency
 
-formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss')
-// => '2024-12-24 13:45:30'
+2. **Play-UI 应用**:
+   - 负责 Tailwind CSS 编译
+   - 扫描自身和 components 包的源文件
+   - 继承 components 包的主题配置
 
-formatNumber(1234567.89, { prefix: '¥', decimals: 2 })
-// => '¥1,234,567.89'
+### 配置文件
 
-isEmail('test@example.com')
-// => true
-```
-
-## 🔄 版本管理与发布 (Changesets)
-
-本项目使用 [Changesets](https://github.com/changesets/changesets) 进行版本管理和变更日志生成。
-
-### 📖 什么是 Changesets?
-
-Changesets 是一个用于管理 monorepo 版本和变更日志的工具。它通过创建"变更集"文件来记录你的修改,然后自动更新版本号和生成 CHANGELOG。
-
-### 🎯 语义化版本 (Semantic Versioning)
-
-版本号格式: `MAJOR.MINOR.PATCH` (例如: `1.2.3`)
-
-- **PATCH** (补丁版本 0.0.x) - 向后兼容的 bug 修复
-
-  - 示例: 修复函数中的 bug、优化性能、更新文档
-  - 命令: 选择 `patch`
-
-- **MINOR** (次版本 0.x.0) - 向后兼容的新功能
-
-  - 示例: 添加新的 hook、新的工具函数、新的可选参数
-  - 命令: 选择 `minor`
-
-- **MAJOR** (主版本 x.0.0) - 不兼容的 API 修改
-  - 示例: 删除函数、修改函数签名、重命名导出
-  - 命令: 选择 `major`
-
-### 📝 完整工作流程
-
-#### 1️⃣ 开发新功能或修复 Bug
-
-```bash
-# 在 packages/hooks 或 packages/utils 中开发
-pnpm dev  # 启动监听模式
-```
-
-修改代码后,确保功能正常工作。
-
-#### 2️⃣ 添加 Changeset (记录变更)
-
-```bash
-pnpm changeset
-```
-
-**交互式流程:**
-
-```
-🦋  Which packages would you like to include?
-> ◉ @monorepo-base/hooks
-  ◯ @monorepo-base/utils
-```
-
-使用空格选择包,回车确认。
-
-```
-🦋  Which packages should have a major bump?
-  ◯ @monorepo-base/hooks
-
-🦋  Which packages should have a minor bump?
-  ◉ @monorepo-base/hooks
-
-🦋  Which packages should have a patch bump?
-  ◯ @monorepo-base/hooks
-```
-
-选择版本类型(major/minor/patch)。
-
-```
-🦋  Please enter a summary for this change (this will be in the changelogs).
-Summary › Added useDebounce hook
-```
-
-输入变更描述(会出现在 CHANGELOG 中)。
-
-**生成的文件:** `.changeset/random-name.md`
-
-```markdown
----
-'@monorepo-base/hooks': minor
----
-
-Added useDebounce hook for debouncing values
-```
-
-#### 3️⃣ 提交 Changeset 到 Git
-
-```bash
-git add .changeset/
-git commit -m "chore: add changeset for useDebounce hook"
-```
-
-**重要:** 将 changeset 文件提交到版本控制,这样团队成员都能看到即将发布的变更。
-
-#### 4️⃣ 更新版本号 (发布前)
-
-```bash
-pnpm changeset version
-```
-
-**这个命令会:**
-
-- ✅ 读取所有 `.changeset/*.md` 文件
-- ✅ 更新 `package.json` 中的版本号
-- ✅ 生成或更新 `CHANGELOG.md`
-- ✅ 删除已应用的 changeset 文件
-
-**示例输出:**
-
-```
-🦋  All files have been updated. Review them and commit at your leisure
-```
-
-**生成的 CHANGELOG.md:**
-
-```markdown
-# @monorepo-base/hooks
-
-## 0.2.0
-
-### Minor Changes
-
-- Added useDebounce hook for debouncing values
-
-## 0.1.1
-
-### Patch Changes
-
-- Add README documentation to packages
-```
-
-#### 5️⃣ 提交版本更新
-
-```bash
-git add .
-git commit -m "chore: release packages"
-git push
-```
-
-#### 6️⃣ 发布到 npm/Verdaccio
-
-**发布到本地 Verdaccio:**
-
-```bash
-# 构建并发布
-pnpm release --registry http://localhost:4873
-```
-
-**发布到 npm 官方源:**
-
-```bash
-# 确保已登录 npm
-npm login
-
-# 发布
-pnpm release
-```
-
-### 🔧 常用场景示例
-
-#### 场景 1: 修复 Bug (Patch)
-
-```bash
-# 1. 修复代码
-# 2. 添加 changeset
-pnpm changeset
-# 选择: patch
-# 描述: Fixed useToggle initial value bug
-
-# 3. 提交
-git add .
-git commit -m "fix: useToggle initial value bug"
-
-# 4. 更新版本 (0.1.1 -> 0.1.2)
-pnpm changeset version
-
-# 5. 发布
-pnpm release --registry http://localhost:4873
-```
-
-#### 场景 2: 添加新功能 (Minor)
-
-```bash
-# 1. 开发新 hook
-# 2. 添加 changeset
-pnpm changeset
-# 选择: minor
-# 描述: Added useDebounce hook
-
-# 3. 提交
-git add .
-git commit -m "feat: add useDebounce hook"
-
-# 4. 更新版本 (0.1.2 -> 0.2.0)
-pnpm changeset version
-
-# 5. 发布
-pnpm release --registry http://localhost:4873
-```
-
-#### 场景 3: 破坏性更新 (Major)
-
-```bash
-# 1. 修改 API
-# 2. 添加 changeset
-pnpm changeset
-# 选择: major
-# 描述: BREAKING CHANGE: Renamed useToggle to useBoolean
-
-# 3. 提交
-git add .
-git commit -m "feat!: rename useToggle to useBoolean"
-
-# 4. 更新版本 (0.2.0 -> 1.0.0)
-pnpm changeset version
-
-# 5. 发布
-pnpm release --registry http://localhost:4873
-```
-
-#### 场景 4: 同时更新多个包
-
-```bash
-pnpm changeset
-# 选择多个包:
-# ◉ @monorepo-base/hooks (minor)
-# ◉ @monorepo-base/utils (patch)
-```
-
-### 📋 Changeset 最佳实践
-
-1. **及时创建 Changeset**
-
-   - 每次有意义的修改都应该创建 changeset
-   - 不要等到发布前才批量创建
-
-2. **清晰的变更描述**
-
-   - 使用用户视角描述变更
-   - 说明"做了什么"而不是"怎么做的"
-   - 好的示例: "Added useDebounce hook for debouncing values"
-   - 不好的示例: "Updated code in hooks folder"
-
-3. **合理选择版本类型**
-
-   - 有疑问时选择更保守的版本(minor 而不是 patch)
-   - 破坏性更新一定要选择 major
-
-4. **定期发布**
-
-   - 不要积累太多 changeset
-   - 建议每周或每两周发布一次
-
-5. **团队协作**
-   - 将 changeset 文件提交到 Git
-   - 在 PR 中包含 changeset
-   - Code Review 时检查 changeset 的准确性
-
-### 🎨 手动创建 Changeset (高级)
-
-如果你不想使用交互式命令,可以手动创建 changeset 文件:
-
-```bash
-# 创建文件 .changeset/my-feature.md
-```
-
-```markdown
----
-'@monorepo-base/hooks': minor
-'@monorepo-base/utils': patch
----
-
-Added new features:
-
-- useDebounce hook in hooks package
-- Fixed formatDate timezone issue in utils package
-```
-
-### 🔍 查看待发布的变更
-
-```bash
-# 查看 changeset 状态
-pnpm changeset status
-
-# 输出示例:
-# Changes to be released:
-# @monorepo-base/hooks: minor
-# @monorepo-base/utils: patch
-```
-
-### 3. 发布到 Verdaccio(本地 npm registry)
-
-#### 前置条件
-
-确保你的 Verdaccio 服务已启动(默认端口 4873):
-
-```bash
-# 如果还没启动,可以运行:
-verdaccio
-```
-
-#### 发布步骤
-
-**方式一: 使用项目脚本(推荐)**
-
-```bash
-# 这会先构建所有包,然后发布
-pnpm release --registry http://localhost:4873
-```
-
-**方式二: 手动发布单个包**
-
-```bash
-# 进入要发布的包目录
-cd packages/hooks
-
-# 发布到本地 verdaccio
-pnpm publish --registry http://localhost:4873 --no-git-checks
-```
-
-#### 首次发布需要登录
-
-```bash
-npm adduser --registry http://localhost:4873
-```
-
-按提示输入用户名、密码和邮箱(可以随意填写)。
-
-### 4. 从 Verdaccio 安装包
-
-在其他项目中使用:
-
-```bash
-# 临时从 verdaccio 安装
-npm install @monorepo-base/hooks --registry http://localhost:4873
-
-# 或者配置 .npmrc
-echo "registry=http://localhost:4873/" > .npmrc
-npm install @monorepo-base/hooks
-```
-
-### 5. 查看已发布的包
-
-访问 http://localhost:4873 可以看到 Verdaccio 的 Web 界面,查看所有已发布的包。
-
-## 🛠️ 技术栈
-
-- **pnpm** - 快速、节省磁盘空间的包管理器
-- **TypeScript** - 类型安全
-- **tsup** - 基于 esbuild 的快速构建工具
-- **Changesets** - 版本管理和变更日志生成
-- **Verdaccio** - 本地 npm registry
-
-## 📝 开发工作流
-
-1. **开发新功能**
-
-   ```bash
-   # 在 packages/hooks 或 packages/utils 中开发
-   pnpm dev  # 启动监听模式
-   ```
-
-2. **添加变更记录**
-
-   ```bash
-   pnpm changeset
-   ```
-
-3. **构建**
-
-   ```bash
-   pnpm build
-   ```
-
-4. **发布到本地 registry**
-   ```bash
-   pnpm release --registry http://localhost:4873
-   ```
-
-## 🔍 常见问题
-
-### Q: 如何添加新的包?
-
-1. 在 `packages/` 下创建新目录
-2. 添加 `package.json`、`tsconfig.json`、`tsup.config.ts`
-3. 参考现有包的配置
-4. 运行 `pnpm install` 安装依赖
-
-### Q: 如何在包之间建立依赖?
-
-在 package.json 中添加依赖:
+**根目录 tsconfig.json** - 统一路径映射:
 
 ```json
 {
-  "dependencies": {
-    "@monorepo-base/utils": "workspace:*"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo-base/components": ["./packages/components/src"],
+      "@monorepo-base/hooks": ["./packages/hooks/src"],
+      "@monorepo-base/utils": ["./packages/utils/src"]
+    }
   }
 }
 ```
 
-### Q: 构建失败怎么办?
+**play-ui/postcss.config.js**:
+
+```js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {}
+  }
+}
+```
+
+**play-ui/tailwind.config.js**:
+
+```js
+import componentsConfig from '../../packages/components/tailwind.config.js'
+
+export default {
+  content: ['./src/**/*.{js,ts,jsx,tsx}', '../../packages/components/src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      ...componentsConfig.theme?.extend
+    }
+  }
+}
+```
+
+## 🔥 热模块替换 (HMR)
+
+项目配置了源文件直接引用,无需手动编译即可开发:
+
+### Vite 配置
+
+```typescript
+// apps/play-ui/vite.config.ts
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@monorepo-base/components': path.resolve(__dirname, '../../packages/components/src'),
+      '@monorepo-base/hooks': path.resolve(__dirname, '../../packages/hooks/src'),
+      '@monorepo-base/utils': path.resolve(__dirname, '../../packages/utils/src')
+    }
+  }
+})
+```
+
+### 效果
+
+- ✅ 修改 packages 代码立即热更新
+- ✅ 无需手动运行 build 命令
+- ✅ 支持 TypeScript 类型检查
+- ✅ packages 之间可以相互引用
+
+## 📦 版本管理与发布
+
+### 使用 Changesets
+
+#### 1. 创建 Changeset
 
 ```bash
-# 清理所有构建产物
-pnpm clean
+pnpm changeset
+```
 
-# 重新安装依赖
-rm -rf node_modules packages/*/node_modules
+交互式选择:
+
+1. 选择要更新的包
+2. 选择版本类型 (major/minor/patch)
+3. 输入变更描述
+
+#### 2. 更新版本号
+
+```bash
+pnpm changeset version
+```
+
+这会:
+
+- 更新 package.json 中的版本号
+- 生成/更新 CHANGELOG.md
+- 删除已应用的 changeset 文件
+
+#### 3. 发布到 Verdaccio
+
+```bash
+pnpm release --registry http://localhost:4873
+```
+
+或发布到 npm:
+
+```bash
+pnpm release
+```
+
+### 版本规范
+
+遵循 [Semantic Versioning](https://semver.org/):
+
+- **Major (1.0.0)**: 破坏性变更
+- **Minor (0.1.0)**: 新功能,向后兼容
+- **Patch (0.0.1)**: Bug 修复,向后兼容
+
+## 🛠️ 开发工作流
+
+### 添加新组件
+
+1. 在 `packages/components/src` 创建组件目录
+2. 编写组件代码,使用 Tailwind 类
+3. 在 `src/index.ts` 中导出
+4. 在 `play-ui` 中测试
+
+### 添加新 Hook
+
+1. 在 `packages/hooks/src` 创建 hook 文件
+2. 编写 hook 逻辑
+3. 在 `src/index.ts` 中导出
+4. 编写单元测试
+
+### 包之间相互引用
+
+直接使用包名引用,无需额外配置:
+
+```typescript
+// packages/hooks/src/useFormattedDate.ts
+import { formatDate } from '@monorepo-base/utils'
+
+// packages/components/src/DateDisplay.tsx
+import { useFormattedDate } from '@monorepo-base/hooks'
+```
+
+## 🔧 常用命令
+
+### 根目录
+
+```bash
+# 安装所有依赖
 pnpm install
 
-# 重新构建
+# 构建所有包
 pnpm build
+
+# 清理所有 dist 目录
+pnpm clean
+
+# 创建 changeset
+pnpm changeset
+
+# 更新版本号
+pnpm changeset version
+
+# 发布到 Verdaccio
+pnpm release --registry http://localhost:4873
 ```
+
+### 单个包
+
+```bash
+# 构建单个包
+pnpm --filter @monorepo-base/components build
+
+# 监听模式构建
+pnpm --filter @monorepo-base/components dev
+
+# 清理单个包
+pnpm --filter @monorepo-base/components clean
+```
+
+### Play-UI
+
+```bash
+cd apps/play-ui
+
+# 启动 Storybook
+pnpm run storybook
+
+# 启动 Vite 开发服务器
+pnpm run dev
+
+# 构建 Storybook
+pnpm run build-storybook
+```
+
+## 🌐 Verdaccio 本地 Registry
+
+### 启动 Verdaccio
+
+```bash
+verdaccio
+```
+
+访问 http://localhost:4873
+
+### 配置 npm registry
+
+临时使用:
+
+```bash
+pnpm publish --registry http://localhost:4873
+```
+
+永久配置 (在 .npmrc):
+
+```
+registry=http://localhost:4873/
+```
+
+### 安装已发布的包
+
+```bash
+pnpm add @monorepo-base/components --registry http://localhost:4873
+```
+
+## 📖 最佳实践
+
+### 1. 组件开发
+
+- ✅ 使用 Tailwind 实用类而非自定义 CSS
+- ✅ 提供完整的 TypeScript 类型
+- ✅ 编写 Storybook stories
+- ✅ 保持组件单一职责
+
+### 2. 版本管理
+
+- ✅ 每次变更都创建 changeset
+- ✅ 遵循语义化版本规范
+- ✅ 编写清晰的 changelog
+- ✅ 发布前测试所有包
+
+### 3. 代码组织
+
+- ✅ 按功能组织代码,不按类型
+- ✅ 使用 barrel exports (index.ts)
+- ✅ 保持包之间的依赖关系清晰
+- ✅ 避免循环依赖
+
+### 4. 样式管理
+
+- ✅ 在 components 包定义主题
+- ✅ 使用 Tailwind 配置共享颜色
+- ✅ 避免内联样式
+- ✅ 保持样式一致性
+
+## 🐛 故障排除
+
+### TypeScript 找不到模块
+
+确保根目录 `tsconfig.json` 中配置了正确的 paths:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo-base/*": ["./packages/*/src"]
+    }
+  }
+}
+```
+
+### Tailwind 样式不生效
+
+1. 检查 `postcss.config.js` 是否正确配置
+2. 确认 `tailwind.config.js` 的 content 路径包含所有源文件
+3. 重启开发服务器
+
+### 包引用错误
+
+1. 运行 `pnpm install` 重新链接
+2. 检查 package.json 中的依赖版本
+3. 清理并重新构建: `pnpm clean && pnpm build`
+
+## 📝 相关文档
+
+- [pnpm Workspace](https://pnpm.io/workspaces)
+- [Changesets](https://github.com/changesets/changesets)
+- [Tailwind CSS v4](https://tailwindcss.com/docs)
+- [Storybook](https://storybook.js.org/)
+- [tsup](https://tsup.egoist.dev/)
 
 ## 📄 License
 
-ISC
+MIT
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request!

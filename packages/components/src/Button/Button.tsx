@@ -52,7 +52,7 @@ export const Button = ({
       onClick={onClick}
       disabled={disabled}
     >
-      {label}
+      {label}12
     </button>
   )
 }
