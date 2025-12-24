@@ -118,37 +118,293 @@ isEmail('test@example.com')
 // => true
 ```
 
-## 🔄 版本管理与发布
+## 🔄 版本管理与发布 (Changesets)
 
-本项目使用 [Changesets](https://github.com/changesets/changesets) 进行版本管理。
+本项目使用 [Changesets](https://github.com/changesets/changesets) 进行版本管理和变更日志生成。
 
-### 1. 添加变更记录
+### 📖 什么是 Changesets?
 
-当你修改了某个包后,运行:
+Changesets 是一个用于管理 monorepo 版本和变更日志的工具。它通过创建"变更集"文件来记录你的修改,然后自动更新版本号和生成 CHANGELOG。
+
+### 🎯 语义化版本 (Semantic Versioning)
+
+版本号格式: `MAJOR.MINOR.PATCH` (例如: `1.2.3`)
+
+- **PATCH** (补丁版本 0.0.x) - 向后兼容的 bug 修复
+
+  - 示例: 修复函数中的 bug、优化性能、更新文档
+  - 命令: 选择 `patch`
+
+- **MINOR** (次版本 0.x.0) - 向后兼容的新功能
+
+  - 示例: 添加新的 hook、新的工具函数、新的可选参数
+  - 命令: 选择 `minor`
+
+- **MAJOR** (主版本 x.0.0) - 不兼容的 API 修改
+  - 示例: 删除函数、修改函数签名、重命名导出
+  - 命令: 选择 `major`
+
+### 📝 完整工作流程
+
+#### 1️⃣ 开发新功能或修复 Bug
+
+```bash
+# 在 packages/hooks 或 packages/utils 中开发
+pnpm dev  # 启动监听模式
+```
+
+修改代码后,确保功能正常工作。
+
+#### 2️⃣ 添加 Changeset (记录变更)
 
 ```bash
 pnpm changeset
 ```
 
-按照提示选择:
+**交互式流程:**
 
-- 要发布的包
-- 版本类型(major/minor/patch)
-- 变更描述
-
-这会在 `.changeset` 目录下创建一个变更文件。
-
-### 2. 更新版本号
-
-```bash
-pnpm version
+```
+🦋  Which packages would you like to include?
+> ◉ @monorepo-base/hooks
+  ◯ @monorepo-base/utils
 ```
 
-这会:
+使用空格选择包,回车确认。
 
-- 更新包的版本号
-- 生成 CHANGELOG.md
-- 删除已应用的 changeset 文件
+```
+🦋  Which packages should have a major bump?
+  ◯ @monorepo-base/hooks
+
+🦋  Which packages should have a minor bump?
+  ◉ @monorepo-base/hooks
+
+🦋  Which packages should have a patch bump?
+  ◯ @monorepo-base/hooks
+```
+
+选择版本类型(major/minor/patch)。
+
+```
+🦋  Please enter a summary for this change (this will be in the changelogs).
+Summary › Added useDebounce hook
+```
+
+输入变更描述(会出现在 CHANGELOG 中)。
+
+**生成的文件:** `.changeset/random-name.md`
+
+```markdown
+---
+'@monorepo-base/hooks': minor
+---
+
+Added useDebounce hook for debouncing values
+```
+
+#### 3️⃣ 提交 Changeset 到 Git
+
+```bash
+git add .changeset/
+git commit -m "chore: add changeset for useDebounce hook"
+```
+
+**重要:** 将 changeset 文件提交到版本控制,这样团队成员都能看到即将发布的变更。
+
+#### 4️⃣ 更新版本号 (发布前)
+
+```bash
+pnpm changeset version
+```
+
+**这个命令会:**
+
+- ✅ 读取所有 `.changeset/*.md` 文件
+- ✅ 更新 `package.json` 中的版本号
+- ✅ 生成或更新 `CHANGELOG.md`
+- ✅ 删除已应用的 changeset 文件
+
+**示例输出:**
+
+```
+🦋  All files have been updated. Review them and commit at your leisure
+```
+
+**生成的 CHANGELOG.md:**
+
+```markdown
+# @monorepo-base/hooks
+
+## 0.2.0
+
+### Minor Changes
+
+- Added useDebounce hook for debouncing values
+
+## 0.1.1
+
+### Patch Changes
+
+- Add README documentation to packages
+```
+
+#### 5️⃣ 提交版本更新
+
+```bash
+git add .
+git commit -m "chore: release packages"
+git push
+```
+
+#### 6️⃣ 发布到 npm/Verdaccio
+
+**发布到本地 Verdaccio:**
+
+```bash
+# 构建并发布
+pnpm release --registry http://localhost:4873
+```
+
+**发布到 npm 官方源:**
+
+```bash
+# 确保已登录 npm
+npm login
+
+# 发布
+pnpm release
+```
+
+### 🔧 常用场景示例
+
+#### 场景 1: 修复 Bug (Patch)
+
+```bash
+# 1. 修复代码
+# 2. 添加 changeset
+pnpm changeset
+# 选择: patch
+# 描述: Fixed useToggle initial value bug
+
+# 3. 提交
+git add .
+git commit -m "fix: useToggle initial value bug"
+
+# 4. 更新版本 (0.1.1 -> 0.1.2)
+pnpm changeset version
+
+# 5. 发布
+pnpm release --registry http://localhost:4873
+```
+
+#### 场景 2: 添加新功能 (Minor)
+
+```bash
+# 1. 开发新 hook
+# 2. 添加 changeset
+pnpm changeset
+# 选择: minor
+# 描述: Added useDebounce hook
+
+# 3. 提交
+git add .
+git commit -m "feat: add useDebounce hook"
+
+# 4. 更新版本 (0.1.2 -> 0.2.0)
+pnpm changeset version
+
+# 5. 发布
+pnpm release --registry http://localhost:4873
+```
+
+#### 场景 3: 破坏性更新 (Major)
+
+```bash
+# 1. 修改 API
+# 2. 添加 changeset
+pnpm changeset
+# 选择: major
+# 描述: BREAKING CHANGE: Renamed useToggle to useBoolean
+
+# 3. 提交
+git add .
+git commit -m "feat!: rename useToggle to useBoolean"
+
+# 4. 更新版本 (0.2.0 -> 1.0.0)
+pnpm changeset version
+
+# 5. 发布
+pnpm release --registry http://localhost:4873
+```
+
+#### 场景 4: 同时更新多个包
+
+```bash
+pnpm changeset
+# 选择多个包:
+# ◉ @monorepo-base/hooks (minor)
+# ◉ @monorepo-base/utils (patch)
+```
+
+### 📋 Changeset 最佳实践
+
+1. **及时创建 Changeset**
+
+   - 每次有意义的修改都应该创建 changeset
+   - 不要等到发布前才批量创建
+
+2. **清晰的变更描述**
+
+   - 使用用户视角描述变更
+   - 说明"做了什么"而不是"怎么做的"
+   - 好的示例: "Added useDebounce hook for debouncing values"
+   - 不好的示例: "Updated code in hooks folder"
+
+3. **合理选择版本类型**
+
+   - 有疑问时选择更保守的版本(minor 而不是 patch)
+   - 破坏性更新一定要选择 major
+
+4. **定期发布**
+
+   - 不要积累太多 changeset
+   - 建议每周或每两周发布一次
+
+5. **团队协作**
+   - 将 changeset 文件提交到 Git
+   - 在 PR 中包含 changeset
+   - Code Review 时检查 changeset 的准确性
+
+### 🎨 手动创建 Changeset (高级)
+
+如果你不想使用交互式命令,可以手动创建 changeset 文件:
+
+```bash
+# 创建文件 .changeset/my-feature.md
+```
+
+```markdown
+---
+'@monorepo-base/hooks': minor
+'@monorepo-base/utils': patch
+---
+
+Added new features:
+
+- useDebounce hook in hooks package
+- Fixed formatDate timezone issue in utils package
+```
+
+### 🔍 查看待发布的变更
+
+```bash
+# 查看 changeset 状态
+pnpm changeset status
+
+# 输出示例:
+# Changes to be released:
+# @monorepo-base/hooks: minor
+# @monorepo-base/utils: patch
+```
 
 ### 3. 发布到 Verdaccio(本地 npm registry)
 
