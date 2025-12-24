@@ -28,6 +28,10 @@ importers:
         version: 5.9.3
 
   packages/hooks:
+    dependencies:
+      '@monorepo-base/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/react':
         specifier: ^19.2.7

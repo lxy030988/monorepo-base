@@ -100,9 +100,66 @@ function UserProfile() {
 - `[1]` - 设置值的函数
 - `[2]` - 删除值的函数
 
+---
+
+### useFormattedDate
+
+用于格式化日期并自动更新的 hook。内部使用 `@monorepo-base/utils` 的 `formatDate` 函数。
+
+**类型签名:**
+
+```ts
+function useFormattedDate(date: Date, format?: string, autoUpdate?: boolean): string
+```
+
+**使用示例:**
+
+```tsx
+import { useFormattedDate } from '@monorepo-base/hooks'
+
+function Clock() {
+  // 静态日期格式化
+  const staticDate = useFormattedDate(new Date(), 'YYYY-MM-DD')
+
+  // 实时时钟(每秒自动更新)
+  const clock = useFormattedDate(new Date(), 'HH:mm:ss', true)
+
+  return (
+    <div>
+      <p>日期: {staticDate}</p>
+      <p>时钟: {clock}</p>
+    </div>
+  )
+}
+```
+
+**参数:**
+
+- `date` - 要格式化的日期对象
+- `format` - 格式字符串,默认 `'YYYY-MM-DD HH:mm:ss'`
+  - `YYYY` - 四位年份
+  - `MM` - 两位月份
+  - `DD` - 两位日期
+  - `HH` - 两位小时
+  - `mm` - 两位分钟
+  - `ss` - 两位秒数
+- `autoUpdate` - 是否自动更新(每秒),默认 `false`
+
+**特性:**
+
+- ✅ 支持自定义格式
+- ✅ 可选的自动更新(实时时钟)
+- ✅ 使用 monorepo 内部的 utils 包
+- ✅ 自动清理定时器
+
+**返回值:**
+
+格式化后的日期字符串
+
 ## 依赖
 
 - React >= 16.8.0
+- @monorepo-base/utils (内部依赖)
 
 ## License
 

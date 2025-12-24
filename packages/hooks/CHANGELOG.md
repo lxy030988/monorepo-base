@@ -1,5 +1,16 @@
 # @monorepo-base/hooks
 
+## 0.2.0
+
+### Minor Changes
+
+- Added useFormattedDate hook
+
+  - New hook that formats dates using utils package
+  - Demonstrates internal package dependency in monorepo
+  - Supports auto-update mode for real-time clock
+  - Added @monorepo-base/utils as dependency
+
 ## 0.1.2
 
 ### Patch Changes
